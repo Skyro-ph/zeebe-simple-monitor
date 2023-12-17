@@ -35,8 +35,9 @@ public class MessageSubscriptionEntity {
   @Column(name = "CORRELATION_KEY_")
   private String correlationKey;
 
-  @Column(name = "PROCESS_INSTANCE_KEY_")
-  private Long processInstanceKey;
+  @ManyToOne
+  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", nullable = false)
+  private ProcessInstanceEntity processInstance;
 
   @Column(name = "ELEMENT_INSTANCE_KEY_")
   private Long elementInstanceKey;
@@ -109,12 +110,12 @@ public class MessageSubscriptionEntity {
     this.targetFlowNodeId = targetFlowNodeId;
   }
 
-  public Long getProcessInstanceKey() {
-    return processInstanceKey;
+  public ProcessInstanceEntity getProcessInstance() {
+    return processInstance;
   }
 
-  public void setProcessInstanceKey(final Long processInstanceKey) {
-    this.processInstanceKey = processInstanceKey;
+  public void setProcessInstance(final ProcessInstanceEntity processInstance) {
+    this.processInstance = processInstance;
   }
 
   public Long getElementInstanceKey() {

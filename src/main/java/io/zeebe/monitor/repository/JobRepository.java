@@ -16,17 +16,22 @@
 package io.zeebe.monitor.repository;
 
 import io.zeebe.monitor.entity.JobEntity;
-import java.util.Collection;
-import java.util.Optional;
+import io.zeebe.monitor.entity.ProcessInstanceEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Collection;
+import java.util.Optional;
 
 public interface JobRepository extends PagingAndSortingRepository<JobEntity, Long> {
 
   Page<JobEntity> findByProcessInstanceKey(long processInstanceKey, Pageable pageable);
 
-  long countByProcessInstanceKey(long processInstanceKey);
+  @Query("SELECT COUNT(j) FROM JOB j WHERE j.processInstance = :processInstance")
+  long countByProcessInstanceKey(@Param("processInstance") ProcessInstanceEntity processInstance);
 
   Optional<JobEntity> findByKey(long key);
 

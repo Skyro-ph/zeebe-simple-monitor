@@ -187,7 +187,7 @@ public class ProcessesViewController extends AbstractViewController {
     dto.setMessageName(subscription.getMessageName());
     dto.setCorrelationKey(Optional.ofNullable(subscription.getCorrelationKey()).orElse(""));
 
-    dto.setProcessInstanceKey(subscription.getProcessInstanceKey());
+    dto.setProcessInstanceKey(subscription.getProcessInstance().getKey());
     dto.setElementInstanceKey(subscription.getElementInstanceKey());
 
     dto.setElementId(subscription.getTargetFlowNodeId());

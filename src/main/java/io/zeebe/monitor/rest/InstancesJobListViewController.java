@@ -63,7 +63,7 @@ public class InstancesJobListViewController extends AbstractInstanceViewControll
             .collect(Collectors.toList());
     dto.setJobs(jobDtos);
 
-    final long count = jobRepository.countByProcessInstanceKey(instance.getKey());
+    final long count = jobRepository.countByProcessInstanceKey(instance);
     this.addPaginationToModel(model, pageable, count);
   }
 }

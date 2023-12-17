@@ -1,16 +1,20 @@
 package io.zeebe.monitor.zeebe.importers;
 
-import io.camunda.zeebe.protocol.record.intent.TimerIntent;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.TimerEntity;
+import io.zeebe.monitor.repository.ProcessInstanceRepository;
 import io.zeebe.monitor.repository.TimerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class TimerImporter {
 
   @Autowired private TimerRepository timerRepository;
+  @Autowired private ProcessInstanceRepository processInstanceRepository;
 
   public void importTimer(final Schema.TimerRecord record) {
 
@@ -31,7 +35,11 @@ public class TimerImporter {
                   newEntity.setRepetitions(record.getRepetitions());
 
                   if (record.getProcessInstanceKey() > 0) {
-                    newEntity.setProcessInstanceKey(record.getProcessInstanceKey());
+                    newEntity.setProcessInstance(processInstanceRepository.findById(record.getProcessInstanceKey())
+                            .orElseThrow(
+                                    () -> new ResponseStatusException(NOT_FOUND, "No process instance found with key: " + record.getProcessInstanceKey())
+                            )
+                    );
                     newEntity.setElementInstanceKey(record.getElementInstanceKey());
                   }
 

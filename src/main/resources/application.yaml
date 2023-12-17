@@ -15,9 +15,11 @@ elastic:
   password: ${ZEEBE_ELASTIC_PASSWORD}
   index: ${ZEEBE_ELASTIC_INDEX}
 
-expiration:
+cleanup:
   processInstances:
-    completed: ${EXPIRATION_PROCESS_INSTANCES_COMPLETED_DAYS}
+    completed:
+      expiration-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_EXPIRATION_DAYS:14}
+      frequency-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_RATE_DAYS:1}
 
 spring:
   datasource:

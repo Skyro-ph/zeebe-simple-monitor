@@ -3,15 +3,20 @@ package io.zeebe.monitor.zeebe.importers;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.MessageSubscriptionEntity;
 import io.zeebe.monitor.repository.MessageSubscriptionRepository;
+import io.zeebe.monitor.repository.ProcessInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class MessageSubscriptionImporter {
 
   @Autowired private MessageSubscriptionRepository messageSubscriptionRepository;
+  @Autowired private ProcessInstanceRepository processInstanceRepository;
 
   public void importMessageSubscription(final Schema.MessageSubscriptionRecord record) {
 
@@ -30,7 +35,12 @@ public class MessageSubscriptionImporter {
                   newEntity.setElementInstanceKey(record.getElementInstanceKey());
                   newEntity.setMessageName(record.getMessageName());
                   newEntity.setCorrelationKey(record.getCorrelationKey());
-                  newEntity.setProcessInstanceKey(record.getProcessInstanceKey());
+                  newEntity.setProcessInstance(
+                          processInstanceRepository.findById(record.getProcessInstanceKey())
+                                  .orElseThrow(
+                                          () -> new ResponseStatusException(NOT_FOUND, "No process instance found with key: " + record.getProcessInstanceKey())
+                                  )
+                  );
                   return newEntity;
                 });
 

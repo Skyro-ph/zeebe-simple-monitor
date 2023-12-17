@@ -35,8 +35,9 @@ public class IncidentEntity {
   @Column(name = "PROCESS_DEFINITION_KEY_")
   private long processDefinitionKey;
 
-  @Column(name = "PROCESS_INSTANCE_KEY_")
-  private long processInstanceKey;
+  @ManyToOne
+  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", nullable = false)
+  private ProcessInstanceEntity processInstance;
 
   @Column(name = "ELEMENT_INSTANCE_KEY_")
   private long elementInstanceKey;
@@ -101,12 +102,12 @@ public class IncidentEntity {
     return this;
   }
 
-  public long getProcessInstanceKey() {
-    return processInstanceKey;
+  public ProcessInstanceEntity getProcessInstance() {
+    return processInstance;
   }
 
-  public void setProcessInstanceKey(final long processInstanceKey) {
-    this.processInstanceKey = processInstanceKey;
+  public void setProcessInstance(final ProcessInstanceEntity processInstance) {
+    this.processInstance = processInstance;
   }
 
   public long getElementInstanceKey() {

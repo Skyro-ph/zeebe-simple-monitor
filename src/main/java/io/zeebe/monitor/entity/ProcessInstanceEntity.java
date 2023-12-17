@@ -15,9 +15,8 @@
  */
 package io.zeebe.monitor.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "PROCESS_INSTANCE")
 public class ProcessInstanceEntity {
@@ -52,6 +51,24 @@ public class ProcessInstanceEntity {
 
   @Column(name = "PARENT_ELEMENT_INSTANCE_KEY_")
   private Long parentElementInstanceKey;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<JobEntity> jobs;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<IncidentEntity> incidents;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<VariableEntity> variables;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<ErrorEntity> errors;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<TimerEntity> timers;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<MessageSubscriptionEntity> messageSubscriptions;
 
   public long getKey() {
     return key;

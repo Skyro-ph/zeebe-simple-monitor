@@ -41,8 +41,9 @@ public class VariableEntity {
   @Lob
   private String value;
 
-  @Column(name = "PROCESS_INSTANCE_KEY_")
-  private long processInstanceKey;
+  @ManyToOne
+  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", nullable = false)
+  private ProcessInstanceEntity processInstance;
 
   @Column(name = "SCOPE_KEY_")
   private long scopeKey;
@@ -87,12 +88,12 @@ public class VariableEntity {
     this.timestamp = timestamp;
   }
 
-  public long getProcessInstanceKey() {
-    return processInstanceKey;
+  public ProcessInstanceEntity getProcessInstance() {
+    return processInstance;
   }
 
-  public void setProcessInstanceKey(final long processInstanceKey) {
-    this.processInstanceKey = processInstanceKey;
+  public void setProcessInstance(final ProcessInstanceEntity processInstance) {
+    this.processInstance = processInstance;
   }
 
   public String getName() {

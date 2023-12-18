@@ -49,7 +49,7 @@ public class InstancesCalledProcessesListViewController extends AbstractInstance
 
                   childDto.setChildProcessInstanceKey(childEntity.getKey());
                   childDto.setChildBpmnProcessId(childEntity.getBpmnProcessId());
-                  childDto.setChildState(childEntity.getState());
+                  childDto.setChildState(childEntity.getState().getValue());
 
                   childDto.setElementInstanceKey(childEntity.getParentElementInstanceKey());
 

@@ -99,7 +99,7 @@ public abstract class AbstractInstanceViewController extends AbstractViewControl
     dto.setBpmnProcessId(instance.getBpmnProcessId());
     dto.setVersion(instance.getVersion());
     final boolean isEnded = instance.getEnd() != null && instance.getEnd() > 0;
-    dto.setState(instance.getState());
+    dto.setState(instance.getState().getValue());
     dto.setRunning(!isEnded);
     dto.setStartTime(Instant.ofEpochMilli(instance.getStart()).toString());
     if (isEnded) {

@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -27,18 +25,11 @@ public class CompletedProcessInstanceCleanupTask {
 
     @Scheduled(fixedRateString = "${cleanup.processInstances.completed.frequency-days}", timeUnit = TimeUnit.DAYS)
     public void cleanupExpiredCompletedProcesses() {
-        var processes = processInstanceRepository.findAll();
-        Set<Long> idsToClean = new HashSet<>();
-
-        long currentTime = System.currentTimeMillis();
-        for (ProcessInstanceEntity process : processes) {
-            if (process != null
-                    && process.getState().equals("Completed")
-                    && process.getEnd() != null
-                    && currentTime - process.getEnd() > expirationIntervalMillis) {
-                idsToClean.add(process.getKey());
-            }
-        }
+        var idsToClean = processInstanceRepository.findAllExpiredIds(
+                ProcessInstanceEntity.State.COMPLETED.toString(),
+                System.currentTimeMillis(),
+                expirationIntervalMillis
+        );
 
         LOG.info("Cleaning expired process instances with ids: " + idsToClean);
 

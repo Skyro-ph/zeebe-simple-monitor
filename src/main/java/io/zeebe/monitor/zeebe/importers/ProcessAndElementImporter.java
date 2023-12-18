@@ -73,7 +73,7 @@ public class ProcessAndElementImporter {
                 });
 
     if (intent.equalsIgnoreCase(ProcessInstanceIntent.ELEMENT_ACTIVATED.name())) {
-      entity.setState("Active");
+      entity.setState(ProcessInstanceEntity.State.ACTIVE);
       entity.setStart(timestamp);
       processInstanceRepository.save(entity);
 
@@ -81,7 +81,7 @@ public class ProcessAndElementImporter {
           record.getProcessInstanceKey(), record.getProcessDefinitionKey());
 
     } else if (intent.equalsIgnoreCase(ProcessInstanceIntent.ELEMENT_COMPLETED.name())) {
-      entity.setState("Completed");
+      entity.setState(ProcessInstanceEntity.State.COMPLETED);
       entity.setEnd(timestamp);
       processInstanceRepository.save(entity);
 
@@ -89,7 +89,7 @@ public class ProcessAndElementImporter {
           record.getProcessInstanceKey(), record.getProcessDefinitionKey());
 
     } else if (intent.equalsIgnoreCase(ProcessInstanceIntent.ELEMENT_TERMINATED.name())) {
-      entity.setState("Terminated");
+      entity.setState(ProcessInstanceEntity.State.TERMINATED);
       entity.setEnd(timestamp);
       processInstanceRepository.save(entity);
 

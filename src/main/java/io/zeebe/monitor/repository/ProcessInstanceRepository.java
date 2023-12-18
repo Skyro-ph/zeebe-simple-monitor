@@ -16,10 +16,14 @@
 package io.zeebe.monitor.repository;
 
 import io.zeebe.monitor.entity.ProcessInstanceEntity;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface ProcessInstanceRepository
     extends PagingAndSortingRepository<ProcessInstanceEntity, Long> {
@@ -39,4 +43,14 @@ public interface ProcessInstanceRepository
       long parentProcessInstanceKey, Pageable pageable);
 
   long countByParentProcessInstanceKey(long parentProcessInstanceKey);
+
+  @Query(value = "SELECT p.KEY_ FROM PROCESS_INSTANCE p" +
+          " WHERE p.STATE_ = :state" +
+          "  AND p.END_ IS NOT NULL" +
+          "  AND (CAST(:currentTimeMillis AS BIGINT) - p.END_) > :expirationIntervalMillis"
+          , nativeQuery = true)
+  List<Long> findAllExpiredIds(
+          @Param("state") String state,
+          @Param("currentTimeMillis") long currentTimeMillis,
+          @Param("expirationIntervalMillis") long expirationIntervalMillis);
 }

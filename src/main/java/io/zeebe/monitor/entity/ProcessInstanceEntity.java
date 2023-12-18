@@ -37,8 +37,9 @@ public class ProcessInstanceEntity {
   @Column(name = "VERSION_")
   private int version;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "STATE_")
-  private String state;
+  private State state;
 
   @Column(name = "START_")
   private long start;
@@ -69,6 +70,22 @@ public class ProcessInstanceEntity {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
   private List<MessageSubscriptionEntity> messageSubscriptions;
+
+  public enum State {
+    COMPLETED("Completed"),
+    ACTIVE("Active"),
+    TERMINATED("Terminated");
+
+    private final String value;
+
+    State(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
+  }
 
   public long getKey() {
     return key;
@@ -134,11 +151,11 @@ public class ProcessInstanceEntity {
     this.end = end;
   }
 
-  public String getState() {
+  public State getState() {
     return state;
   }
 
-  public void setState(final String state) {
+  public void setState(final State state) {
     this.state = state;
   }
 

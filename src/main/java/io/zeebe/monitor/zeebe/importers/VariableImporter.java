@@ -16,20 +16,15 @@ public class VariableImporter {
 
   @Autowired
   private VariableRepository variableRepository;
-  @Autowired
-  private ProcessInstanceRepository processInstanceRepository;
 
   public void importVariable(final Schema.VariableRecord record) {
     final VariableEntity newVariable = new VariableEntity();
     newVariable.setPosition(record.getMetadata().getPosition());
     newVariable.setPartitionId(record.getMetadata().getPartitionId());
-    final ProcessInstanceEntity processInstance = processInstanceRepository.findById(record.getProcessInstanceKey())
-            .orElseThrow(
-                    () -> new ResponseStatusException(NOT_FOUND, "No process instance found with key: " + record.getProcessInstanceKey())
-            );
+
     if (!variableRepository.existsById(newVariable.getGeneratedIdentifier())) {
       newVariable.setTimestamp(record.getMetadata().getTimestamp());
-      newVariable.setProcessInstance(processInstance);
+      newVariable.setProcessInstanceKey(record.getProcessInstanceKey());
       newVariable.setName(record.getName());
       newVariable.setValue(record.getValue());
       newVariable.setScopeKey(record.getScopeKey());

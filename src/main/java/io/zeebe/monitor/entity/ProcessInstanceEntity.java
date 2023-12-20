@@ -54,6 +54,9 @@ public class ProcessInstanceEntity {
   private Long parentElementInstanceKey;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
+  private List<ElementInstanceEntity> elementInstances;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")
   private List<JobEntity> jobs;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processInstance")

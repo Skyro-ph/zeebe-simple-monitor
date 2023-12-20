@@ -45,8 +45,8 @@ public class ErrorsViewController extends AbstractViewController {
     dto.setStacktrace(entity.getStacktrace());
     dto.setTimestamp(Instant.ofEpochMilli(entity.getTimestamp()).toString());
 
-    if (entity.getProcessInstance().getKey() > 0) {
-      dto.setProcessInstanceKey(entity.getProcessInstance().getKey());
+    if (entity.getProcessInstanceKey() > 0) {
+      dto.setProcessInstanceKey(entity.getProcessInstanceKey());
     }
 
     return dto;

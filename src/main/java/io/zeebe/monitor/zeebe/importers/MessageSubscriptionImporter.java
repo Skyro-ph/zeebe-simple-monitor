@@ -16,7 +16,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class MessageSubscriptionImporter {
 
   @Autowired private MessageSubscriptionRepository messageSubscriptionRepository;
-  @Autowired private ProcessInstanceRepository processInstanceRepository;
 
   public void importMessageSubscription(final Schema.MessageSubscriptionRecord record) {
 
@@ -35,12 +34,7 @@ public class MessageSubscriptionImporter {
                   newEntity.setElementInstanceKey(record.getElementInstanceKey());
                   newEntity.setMessageName(record.getMessageName());
                   newEntity.setCorrelationKey(record.getCorrelationKey());
-                  newEntity.setProcessInstance(
-                          processInstanceRepository.findById(record.getProcessInstanceKey())
-                                  .orElseThrow(
-                                          () -> new ResponseStatusException(NOT_FOUND, "No process instance found with key: " + record.getProcessInstanceKey())
-                                  )
-                  );
+                  newEntity.setProcessInstanceKey(record.getProcessInstanceKey());
                   return newEntity;
                 });
 

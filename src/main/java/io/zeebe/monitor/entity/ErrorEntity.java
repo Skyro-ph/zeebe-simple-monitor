@@ -32,9 +32,12 @@ public class ErrorEntity {
   @Column(name = "ERROR_EVENT_POSITION_")
   private long errorEventPosition;
 
-  @ManyToOne
-  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", nullable = false)
+  @ManyToOne(targetEntity = ProcessInstanceEntity.class, fetch = FetchType.EAGER)
+  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", insertable = false, updatable = false)
   private ProcessInstanceEntity processInstance;
+
+  @Column(name = "PROCESS_INSTANCE_KEY_")
+  private long processInstanceKey;
 
   @Column(name = "EXCEPTION_MESSAGE_")
   @Lob
@@ -63,12 +66,12 @@ public class ErrorEntity {
     this.errorEventPosition = errorEventPosition;
   }
 
-  public ProcessInstanceEntity getProcessInstance() {
-    return processInstance;
+  public long getProcessInstanceKey() {
+    return processInstanceKey;
   }
 
-  public void setProcessInstance(final ProcessInstanceEntity processInstance) {
-    this.processInstance = processInstance;
+  public void setProcessInstanceKey(final long processInstanceKey) {
+    this.processInstanceKey = processInstanceKey;
   }
 
   public String getExceptionMessage() {

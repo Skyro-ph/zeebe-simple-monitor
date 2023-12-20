@@ -29,9 +29,12 @@ public class JobEntity {
   @Column(name = "KEY_")
   private long key;
 
-  @ManyToOne
-  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", nullable = false)
+  @ManyToOne(targetEntity = ProcessInstanceEntity.class, fetch = FetchType.EAGER)
+  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", insertable = false, updatable = false)
   private ProcessInstanceEntity processInstance;
+
+  @Column(name = "PROCESS_INSTANCE_KEY_")
+  private long processInstanceKey;
 
   @Column(name = "ELEMENT_INSTANCE_KEY_")
   private long elementInstanceKey;
@@ -59,12 +62,12 @@ public class JobEntity {
     this.key = key;
   }
 
-  public ProcessInstanceEntity getProcessInstance() {
-    return processInstance;
+  public long getProcessInstanceKey() {
+    return processInstanceKey;
   }
 
-  public void setProcessInstance(final ProcessInstanceEntity processInstance) {
-    this.processInstance = processInstance;
+  public void setProcessInstanceKey(final long processInstanceKey) {
+    this.processInstanceKey = processInstanceKey;
   }
 
   public long getElementInstanceKey() {

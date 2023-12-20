@@ -47,7 +47,7 @@ public class JobsViewController extends AbstractViewController {
 
     dto.setKey(job.getKey());
     dto.setJobType(job.getJobType());
-    dto.setProcessInstanceKey(job.getProcessInstance().getKey());
+    dto.setProcessInstanceKey(job.getProcessInstanceKey());
     dto.setElementInstanceKey(job.getElementInstanceKey());
     dto.setState(job.getState());
     dto.setRetries(job.getRetries());

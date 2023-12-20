@@ -32,9 +32,12 @@ public class TimerEntity {
   @Column(name = "PROCESS_DEFINITION_KEY_")
   private long processDefinitionKey;
 
-  @ManyToOne
-  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", nullable = false)
+  @ManyToOne(targetEntity = ProcessInstanceEntity.class, fetch = FetchType.EAGER)
+  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", insertable = false, updatable = false)
   private ProcessInstanceEntity processInstance;
+
+  @Column(name = "PROCESS_INSTANCE_KEY_")
+  private long processInstanceKey;
 
   @Column(name = "ELEMENT_INSTANCE_KEY_")
   private Long elementInstanceKey;
@@ -110,12 +113,12 @@ public class TimerEntity {
     this.processDefinitionKey = processDefinitionKey;
   }
 
-  public ProcessInstanceEntity getProcessInstance() {
-    return processInstance;
+  public Long getProcessInstanceKey() {
+    return processInstanceKey;
   }
 
-  public void setProcessInstance(final ProcessInstanceEntity processInstance) {
-    this.processInstance = processInstance;
+  public void setProcessInstanceKey(final Long processInstanceKey) {
+    this.processInstanceKey = processInstanceKey;
   }
 
   public int getRepetitions() {

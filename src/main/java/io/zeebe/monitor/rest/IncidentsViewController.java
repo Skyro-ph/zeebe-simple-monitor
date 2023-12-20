@@ -64,7 +64,7 @@ public class IncidentsViewController extends AbstractViewController {
 
     dto.setBpmnProcessId(incident.getBpmnProcessId());
     dto.setProcessDefinitionKey(incident.getProcessDefinitionKey());
-    dto.setProcessInstanceKey(incident.getProcessInstance().getKey());
+    dto.setProcessInstanceKey(incident.getProcessInstanceKey());
 
     dto.setErrorType(incident.getErrorType());
     dto.setErrorMessage(incident.getErrorMessage());

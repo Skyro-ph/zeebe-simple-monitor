@@ -16,6 +16,7 @@ public class JobImporter {
     final String intent = record.getMetadata().getIntent();
     final long key = record.getMetadata().getKey();
     final long timestamp = record.getMetadata().getTimestamp();
+
     final JobEntity entity =
         jobRepository
             .findById(key)

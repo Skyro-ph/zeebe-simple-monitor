@@ -3,14 +3,10 @@ package io.zeebe.monitor.zeebe.importers;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.MessageSubscriptionEntity;
 import io.zeebe.monitor.repository.MessageSubscriptionRepository;
-import io.zeebe.monitor.repository.ProcessInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class MessageSubscriptionImporter {

@@ -1,15 +1,10 @@
 package io.zeebe.monitor.zeebe.importers;
 
 import io.zeebe.exporter.proto.Schema;
-import io.zeebe.monitor.entity.ProcessInstanceEntity;
 import io.zeebe.monitor.entity.VariableEntity;
-import io.zeebe.monitor.repository.ProcessInstanceRepository;
 import io.zeebe.monitor.repository.VariableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class VariableImporter {

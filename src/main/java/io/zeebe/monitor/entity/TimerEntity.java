@@ -37,7 +37,7 @@ public class TimerEntity {
   private ProcessInstanceEntity processInstance;
 
   @Column(name = "PROCESS_INSTANCE_KEY_")
-  private long processInstanceKey;
+  private Long processInstanceKey;
 
   @Column(name = "ELEMENT_INSTANCE_KEY_")
   private Long elementInstanceKey;

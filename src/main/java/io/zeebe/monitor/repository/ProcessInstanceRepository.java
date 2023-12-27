@@ -18,12 +18,16 @@ package io.zeebe.monitor.repository;
 import io.zeebe.monitor.entity.ProcessInstanceEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface ProcessInstanceRepository
     extends PagingAndSortingRepository<ProcessInstanceEntity, Long> {
@@ -46,11 +50,17 @@ public interface ProcessInstanceRepository
 
   @Query(value = "SELECT p.KEY_ FROM PROCESS_INSTANCE p" +
           " WHERE p.STATE_ = :state" +
-          "  AND p.END_ IS NOT NULL" +
-          "  AND (CAST(:currentTimeMillis AS BIGINT) - p.END_) > :expirationIntervalMillis"
+          " AND p.END_ IS NOT NULL" +
+          " AND (CAST(:currentTimeMillis AS BIGINT) - p.END_) > :expirationIntervalMillis"
           , nativeQuery = true)
   List<Long> findAllExpiredIds(
           @Param("state") String state,
           @Param("currentTimeMillis") long currentTimeMillis,
           @Param("expirationIntervalMillis") long expirationIntervalMillis);
+
+  @Async
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM PROCESS_INSTANCE p WHERE p.key IN :processInstanceKeys")
+  CompletableFuture<Void> deleteByProcessInstanceKeysAsync(@Param("processInstanceKeys") Iterable<Long> processInstanceKeys);
 }

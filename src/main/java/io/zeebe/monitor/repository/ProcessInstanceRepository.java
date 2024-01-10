@@ -25,6 +25,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -59,8 +60,7 @@ public interface ProcessInstanceRepository
           @Param("expirationIntervalMillis") long expirationIntervalMillis);
 
   @Async
-  @Modifying
   @Transactional
-  @Query("DELETE FROM PROCESS_INSTANCE p WHERE p.key IN :processInstanceKeys")
-  CompletableFuture<Void> deleteByProcessInstanceKeysAsync(@Param("processInstanceKeys") Iterable<Long> processInstanceKeys);
+  @Modifying
+  CompletableFuture<Void> deleteByKeyIn(Collection<Long> key);
 }

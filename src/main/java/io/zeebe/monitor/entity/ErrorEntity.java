@@ -32,10 +32,6 @@ public class ErrorEntity {
   @Column(name = "ERROR_EVENT_POSITION_")
   private long errorEventPosition;
 
-  @ManyToOne(targetEntity = ProcessInstanceEntity.class, fetch = FetchType.EAGER)
-  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", insertable = false, updatable = false)
-  private ProcessInstanceEntity processInstance;
-
   @Column(name = "PROCESS_INSTANCE_KEY_")
   private long processInstanceKey;
 

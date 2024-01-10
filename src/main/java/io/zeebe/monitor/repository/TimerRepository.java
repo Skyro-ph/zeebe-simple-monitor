@@ -16,17 +16,16 @@
 package io.zeebe.monitor.repository;
 
 import io.zeebe.monitor.entity.TimerEntity;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface TimerRepository extends PagingAndSortingRepository<TimerEntity, Long> {
 
@@ -37,8 +36,7 @@ public interface TimerRepository extends PagingAndSortingRepository<TimerEntity,
   List<TimerEntity> findByProcessDefinitionKeyAndProcessInstanceKeyIsNull(Long processInstanceKey);
 
   @Async
-  @Modifying
   @Transactional
-  @Query("DELETE FROM TIMER t WHERE t.processInstanceKey IN :processInstanceKeys")
-  CompletableFuture<Void> deleteByProcessInstanceKeysAsync(@Param("processInstanceKeys") Iterable<Long> processInstanceKeys);
+  @Modifying
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
 }

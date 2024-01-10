@@ -20,6 +20,7 @@ cleanup:
     completed:
       expiration-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_EXPIRATION_DAYS:14}
       frequency-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_RATE_DAYS:1}
+      partition-size: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_PARTITION_SIZE:15}
 
 spring:
   datasource:

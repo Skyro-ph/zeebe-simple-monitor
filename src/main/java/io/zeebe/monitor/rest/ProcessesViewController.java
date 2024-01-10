@@ -154,7 +154,7 @@ public class ProcessesViewController extends AbstractViewController {
     dto.setProcessDefinitionKey(instance.getProcessDefinitionKey());
 
     final boolean isEnded = instance.getEnd() != null && instance.getEnd() > 0;
-    dto.setState(instance.getState().getValue());
+    dto.setState(instance.getState());
 
     dto.setStartTime(Instant.ofEpochMilli(instance.getStart()).toString());
 

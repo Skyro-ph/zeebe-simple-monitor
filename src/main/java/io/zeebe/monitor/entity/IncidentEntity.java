@@ -35,10 +35,6 @@ public class IncidentEntity {
   @Column(name = "PROCESS_DEFINITION_KEY_")
   private long processDefinitionKey;
 
-  @ManyToOne(targetEntity = ProcessInstanceEntity.class, fetch = FetchType.EAGER)
-  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", insertable = false, updatable = false)
-  private ProcessInstanceEntity processInstance;
-
   @Column(name = "PROCESS_INSTANCE_KEY_")
   private long processInstanceKey;
 

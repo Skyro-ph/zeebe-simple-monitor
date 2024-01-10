@@ -37,8 +37,7 @@ public class ProcessInstanceEntity {
   private int version;
 
   @Column(name = "STATE_")
-  @Enumerated(EnumType.STRING)
-  private State state;
+  private String state;
 
   @Column(name = "START_")
   private long start;
@@ -57,14 +56,14 @@ public class ProcessInstanceEntity {
     ACTIVE("Active"),
     TERMINATED("Terminated");
 
-    private final String value;
+    private final String title;
 
-    State(String value) {
-      this.value = value;
+    State(String title) {
+      this.title = title;
     }
 
-    public String getValue() {
-      return value;
+    public String getTitle() {
+      return title;
     }
   }
 
@@ -132,11 +131,11 @@ public class ProcessInstanceEntity {
     this.end = end;
   }
 
-  public State getState() {
+  public String getState() {
     return state;
   }
 
-  public void setState(final State state) {
+  public void setState(final String state) {
     this.state = state;
   }
 

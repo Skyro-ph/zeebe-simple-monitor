@@ -35,10 +35,6 @@ public class MessageSubscriptionEntity {
   @Column(name = "CORRELATION_KEY_")
   private String correlationKey;
 
-  @ManyToOne(targetEntity = ProcessInstanceEntity.class, fetch = FetchType.EAGER)
-  @JoinColumn(name = "PROCESS_INSTANCE_KEY_", insertable = false, updatable = false)
-  private ProcessInstanceEntity processInstance;
-
   @Column(name = "PROCESS_INSTANCE_KEY_")
   private long processInstanceKey;
 

@@ -17,13 +17,12 @@ package io.zeebe.monitor.repository;
 
 import io.zeebe.monitor.entity.IncidentEntity;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public interface IncidentRepository extends PagingAndSortingRepository<IncidentEntity, Long>, QuerydslPredicateExecutor<IncidentEntity> {
@@ -31,8 +30,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<IncidentE
   Iterable<IncidentEntity> findByProcessInstanceKey(long processInstanceKey);
 
   @Async
-  @Modifying
   @Transactional
-  @Query("DELETE FROM INCIDENT i WHERE i.processInstanceKey IN :processInstanceKeysessInstanceKeys")
-  CompletableFuture<Void> deleteByProcessInstanceKeysAsync(@Param("processInstanceKeys") Iterable<Long> processInstanceKeys);
+  @Modifying
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
 }

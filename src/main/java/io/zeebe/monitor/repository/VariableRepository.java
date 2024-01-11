@@ -35,5 +35,5 @@ public interface VariableRepository extends PagingAndSortingRepository<VariableE
   @Async
   @Transactional
   @Modifying
-  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKeys);
 }

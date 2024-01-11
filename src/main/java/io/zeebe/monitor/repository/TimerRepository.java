@@ -38,5 +38,5 @@ public interface TimerRepository extends PagingAndSortingRepository<TimerEntity,
   @Async
   @Transactional
   @Modifying
-  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKeys);
 }

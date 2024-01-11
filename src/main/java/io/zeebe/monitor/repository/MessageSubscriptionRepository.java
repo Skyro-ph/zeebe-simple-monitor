@@ -48,5 +48,5 @@ public interface MessageSubscriptionRepository
   @Async
   @Transactional
   @Modifying
-  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKeys);
 }

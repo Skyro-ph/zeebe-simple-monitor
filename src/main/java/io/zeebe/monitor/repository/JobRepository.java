@@ -42,5 +42,5 @@ public interface JobRepository extends PagingAndSortingRepository<JobEntity, Lon
   @Async
   @Transactional
   @Modifying
-  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKeys);
 }

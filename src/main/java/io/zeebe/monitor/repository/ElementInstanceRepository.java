@@ -31,5 +31,5 @@ public interface ElementInstanceRepository extends CrudRepository<ElementInstanc
   @Async
   @Transactional
   @Modifying
-  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKey);
+  CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKeys);
 }

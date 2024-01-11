@@ -15,7 +15,9 @@
  */
 package io.zeebe.monitor.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity(name = "PROCESS_INSTANCE")
 public class ProcessInstanceEntity {

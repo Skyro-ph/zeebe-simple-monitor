@@ -36,7 +36,7 @@ public class MessageSubscriptionEntity {
   private String correlationKey;
 
   @Column(name = "PROCESS_INSTANCE_KEY_")
-  private long processInstanceKey;
+  private Long processInstanceKey;
 
   @Column(name = "ELEMENT_INSTANCE_KEY_")
   private Long elementInstanceKey;

@@ -44,7 +44,7 @@ public class CompletedProcessInstanceCleanupTask {
             MessageSubscriptionRepository messageSubscriptionRepository,
             TimerRepository timerRepository,
             VariableRepository variableRepository) {
-         this.expirationIntervalMillis = TimeUnit.DAYS.toMillis(expirationIntervalInDays);
+        this.expirationIntervalMillis = TimeUnit.DAYS.toMillis(expirationIntervalInDays);
         this.partitionSize = partitionSize;
         this.processInstanceRepository = processInstanceRepository;
         this.elementInstanceRepository = elementInstanceRepository;
@@ -56,7 +56,7 @@ public class CompletedProcessInstanceCleanupTask {
         this.variableRepository = variableRepository;
     }
 
-    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRateString = "${cleanup.processInstances.completed.frequency-days}", timeUnit = TimeUnit.DAYS)
     public void cleanupExpiredData() {
         var idsToClean = processInstanceRepository.findAllExpiredIds(
                 ProcessInstanceEntity.State.COMPLETED.getTitle(),

@@ -18,14 +18,14 @@ package io.zeebe.monitor.repository;
 import io.zeebe.monitor.entity.JobEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import static javax.transaction.Transactional.TxType.SUPPORTS;
 
 public interface JobRepository extends PagingAndSortingRepository<JobEntity, Long> {
 
@@ -39,8 +39,6 @@ public interface JobRepository extends PagingAndSortingRepository<JobEntity, Lon
 
   long countByStateNotIn(Collection<String> state);
 
-  @Async
-  @Transactional
-  @Modifying
+  @Transactional(SUPPORTS)
   CompletableFuture<Void> deleteByProcessInstanceKeyIn(Collection<Long> processInstanceKeys);
 }

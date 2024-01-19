@@ -18,17 +18,17 @@ package io.zeebe.monitor.repository;
 import io.zeebe.monitor.entity.ProcessInstanceEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import static javax.transaction.Transactional.TxType.SUPPORTS;
 
 public interface ProcessInstanceRepository
     extends PagingAndSortingRepository<ProcessInstanceEntity, Long> {
@@ -54,13 +54,11 @@ public interface ProcessInstanceRepository
           " AND p.END_ IS NOT NULL" +
           " AND (CAST(:currentTimeMillis AS BIGINT) - p.END_) > :expirationIntervalMillis"
           , nativeQuery = true)
-  List<Long> findAllExpiredIds(
+  List<Long> findExpiredIdsByStateAndTime(
           @Param("state") String state,
           @Param("currentTimeMillis") long currentTimeMillis,
           @Param("expirationIntervalMillis") long expirationIntervalMillis);
 
-  @Async
-  @Transactional
-  @Modifying
+  @Transactional(SUPPORTS)
   CompletableFuture<Void> deleteByKeyIn(Collection<Long> key);
 }

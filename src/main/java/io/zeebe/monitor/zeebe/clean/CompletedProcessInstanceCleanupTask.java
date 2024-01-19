@@ -8,8 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class CompletedProcessInstanceCleanupTask {
-
     private static final Logger LOG = LoggerFactory.getLogger(CompletedProcessInstanceCleanupTask.class);
 
     private final ProcessInstanceRepository processInstanceRepository;
@@ -30,12 +32,15 @@ public class CompletedProcessInstanceCleanupTask {
     private final TimerRepository timerRepository;
     private final VariableRepository variableRepository;
 
+    private final PlatformTransactionManager transactionManager;
+
     private final long expirationIntervalMillis;
     private final int partitionSize;
 
     public CompletedProcessInstanceCleanupTask(
             @Value("${cleanup.processInstances.completed.expiration-days}") final long expirationIntervalInDays,
             @Value("${cleanup.processInstances.completed.partition-size}") final int partitionSize,
+            PlatformTransactionManager transactionManager,
             ProcessInstanceRepository processInstanceRepository,
             ElementInstanceRepository elementInstanceRepository,
             ErrorRepository errorRepository,
@@ -54,11 +59,12 @@ public class CompletedProcessInstanceCleanupTask {
         this.messageSubscriptionRepository = messageSubscriptionRepository;
         this.timerRepository = timerRepository;
         this.variableRepository = variableRepository;
+        this.transactionManager = transactionManager;
     }
 
     @Scheduled(fixedRateString = "${cleanup.processInstances.completed.frequency-days}", timeUnit = TimeUnit.DAYS)
     public void cleanupExpiredData() {
-        var idsToClean = processInstanceRepository.findAllExpiredIds(
+        var idsToClean = processInstanceRepository.findExpiredIdsByStateAndTime(
                 ProcessInstanceEntity.State.COMPLETED.getTitle(),
                 System.currentTimeMillis(),
                 expirationIntervalMillis
@@ -72,6 +78,9 @@ public class CompletedProcessInstanceCleanupTask {
 
     @Transactional
     public void cleanupData(Collection<Long> processInstanceIdsToClean) {
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(def);
+
         try {
             List<CompletableFuture<?>> futures = List.of(
                     processInstanceRepository.deleteByKeyIn(processInstanceIdsToClean),
@@ -90,8 +99,10 @@ public class CompletedProcessInstanceCleanupTask {
 
             combinedFuture.join();
 
+            transactionManager.commit(status);
             LOG.info("Deletion completed for group: {}", processInstanceIdsToClean);
         } catch (Exception e) {
+            transactionManager.rollback(status);
             LOG.error("Error occurred during deletion for group: " + processInstanceIdsToClean, e);
         }
     }

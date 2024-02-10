@@ -128,6 +128,29 @@ services:
     profiles:
       - hazelcast_postgres
 
+  simple-monitor-postgres-local:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      - zeebe.client.broker.gateway-address=zeebe:26500
+      - zeebe.client.worker.hazelcast.connection=zeebe:5701
+      - zeebe.client.worker.hazelcast.clusterName=dev
+      - spring.datasource.url=jdbc:postgresql://postgres-zeebe-simple-monitor:5432/postgres
+      - spring.datasource.username=postgres
+      - spring.datasource.password=zeebe
+      - spring.datasource.driverClassName=org.postgresql.Driver
+      - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+    ports:
+      - "8082:8082"
+    depends_on:
+      - zeebe
+      - postgres-zeebe-simple-monitor
+    networks:
+      - zeebe_network
+    profiles:
+      - hazelcast_postgres
+
   postgres-zeebe-simple-monitor:
     image: postgres:16.1
     restart: always

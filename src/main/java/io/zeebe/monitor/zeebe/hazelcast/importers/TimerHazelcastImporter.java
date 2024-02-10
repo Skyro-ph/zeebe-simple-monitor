@@ -1,17 +1,31 @@
 package io.zeebe.monitor.zeebe.hazelcast.importers;
 
+import com.google.protobuf.Message;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.TimerEntity;
 import io.zeebe.monitor.repository.TimerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
-public class TimerHazelcastImporter {
+public class TimerHazelcastImporter implements Importer<Schema.TimerRecord> {
 
   @Autowired private TimerRepository timerRepository;
 
-  public void importTimer(final Schema.TimerRecord record) {
+    @Override
+    public Set<String> supportedTypes() {
+        return Set.of("TIMER");
+    }
+
+    @Override
+    public Message.Builder getRecordBuilder() {
+        return Schema.TimerRecord.newBuilder();
+    }
+
+    @Override
+  public void importData(final Schema.TimerRecord record) {
 
     final String intent = record.getMetadata().getIntent();
     final long key = record.getMetadata().getKey();

@@ -1,5 +1,6 @@
 package io.zeebe.monitor.zeebe.hazelcast.importers;
 
+import com.google.protobuf.Message;
 import io.camunda.zeebe.protocol.record.intent.IncidentIntent;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.IncidentEntity;
@@ -7,12 +8,25 @@ import io.zeebe.monitor.repository.IncidentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
-public class IncidentHazelcastImporter {
+public class IncidentHazelcastImporter implements Importer<Schema.IncidentRecord> {
 
     @Autowired private IncidentRepository incidentRepository;
 
-    public void importIncident(final Schema.IncidentRecord record) {
+    @Override
+    public Set<String> supportedTypes() {
+        return Set.of("INCIDENT");
+    }
+
+    @Override
+    public Message.Builder getRecordBuilder() {
+        return Schema.IncidentRecord.newBuilder();
+    }
+
+    @Override
+    public void importData(final Schema.IncidentRecord record) {
 
         final String intent = record.getMetadata().getIntent();
         final long key = record.getMetadata().getKey();

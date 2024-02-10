@@ -1,18 +1,32 @@
 package io.zeebe.monitor.zeebe.hazelcast.importers;
 
+import com.google.protobuf.Message;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.MessageSubscriptionEntity;
 import io.zeebe.monitor.repository.MessageSubscriptionRepository;
+
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MessageSubscriptionHazelcastImporter {
+public class MessageSubscriptionHazelcastImporter implements Importer<Schema.MessageSubscriptionRecord> {
 
   @Autowired private MessageSubscriptionRepository messageSubscriptionRepository;
 
-  public void importMessageSubscription(final Schema.MessageSubscriptionRecord record) {
+    @Override
+    public Set<String> supportedTypes() {
+        return Set.of("MESSAGE_SUBSCRIPTION", "PROCESS_MESSAGE_SUBSCRIPTION");
+    }
+
+    @Override
+    public Message.Builder getRecordBuilder() {
+        return Schema.MessageSubscriptionRecord.newBuilder();
+    }
+
+    @Override
+    public void importData(final Schema.MessageSubscriptionRecord record) {
 
     final String intent = record.getMetadata().getIntent();
     final long timestamp = record.getMetadata().getTimestamp();

@@ -10,7 +10,8 @@ import io.zeebe.monitor.zeebe.hazelcast.importers.IncidentHazelcastImporter;
 import io.zeebe.monitor.zeebe.hazelcast.importers.JobHazelcastImporter;
 import io.zeebe.monitor.zeebe.hazelcast.importers.MessageHazelcastImporter;
 import io.zeebe.monitor.zeebe.hazelcast.importers.MessageSubscriptionHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.ProcessAndElementHazelcastImporter;
+import io.zeebe.monitor.zeebe.hazelcast.importers.ProcessHazelcastImporter;
+import io.zeebe.monitor.zeebe.hazelcast.importers.ProcessInstanceHazelcastImporter;
 import io.zeebe.monitor.zeebe.hazelcast.importers.TimerHazelcastImporter;
 import io.zeebe.monitor.zeebe.hazelcast.importers.VariableHazelcastImporter;
 import java.util.function.Consumer;
@@ -21,7 +22,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class HazelcastImportService {
 
-  @Autowired private ProcessAndElementHazelcastImporter processAndElementImporter;
+  @Autowired private ProcessHazelcastImporter processImporter;
+  @Autowired private ProcessInstanceHazelcastImporter processInstanceImporter;
   @Autowired private VariableHazelcastImporter variableImporter;
   @Autowired private JobHazelcastImporter jobImporter;
   @Autowired private IncidentHazelcastImporter incidentImporter;
@@ -48,36 +50,36 @@ public class HazelcastImportService {
     final var builder =
         ZeebeHazelcast.newBuilder(hazelcast)
             .addProcessListener(
-                record -> ifEvent(record, Schema.ProcessRecord::getMetadata, processAndElementImporter::importProcess))
+                record -> ifEvent(record, Schema.ProcessRecord::getMetadata, processImporter::importData))
             .addProcessInstanceListener(
                 record ->
                     ifEvent(
                         record,
                         Schema.ProcessInstanceRecord::getMetadata,
-                        processAndElementImporter::importProcessInstance))
+                        processInstanceImporter::importData))
             .addIncidentListener(
-                record -> ifEvent(record, Schema.IncidentRecord::getMetadata, incidentImporter::importIncident))
+                record -> ifEvent(record, Schema.IncidentRecord::getMetadata, incidentImporter::importData))
             .addJobListener(
-                record -> ifEvent(record, Schema.JobRecord::getMetadata, jobImporter::importJob))
+                record -> ifEvent(record, Schema.JobRecord::getMetadata, jobImporter::importData))
             .addVariableListener(
-                record -> ifEvent(record, Schema.VariableRecord::getMetadata, variableImporter::importVariable))
+                record -> ifEvent(record, Schema.VariableRecord::getMetadata, variableImporter::importData))
             .addTimerListener(
-                record -> ifEvent(record, Schema.TimerRecord::getMetadata, timerImporter::importTimer))
+                record -> ifEvent(record, Schema.TimerRecord::getMetadata, timerImporter::importData))
             .addMessageListener(
-                record -> ifEvent(record, Schema.MessageRecord::getMetadata, messageImporter::importMessage))
+                record -> ifEvent(record, Schema.MessageRecord::getMetadata, messageImporter::importData))
             .addMessageSubscriptionListener(
                 record ->
                     ifEvent(
                         record,
                         Schema.MessageSubscriptionRecord::getMetadata,
-                            messageSubscriptionImporter::importMessageSubscription))
+                            messageSubscriptionImporter::importData))
             .addMessageStartEventSubscriptionListener(
                 record ->
                     ifEvent(
                         record,
                         Schema.MessageStartEventSubscriptionRecord::getMetadata,
                             messageSubscriptionImporter::importMessageStartEventSubscription))
-            .addErrorListener(errorImporter::importError)
+            .addErrorListener(errorImporter::importData)
             .postProcessListener(
                 sequence -> {
                   hazelcastConfig.setSequence(sequence);

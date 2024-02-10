@@ -15,13 +15,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(
-    classes = {ProcessAndElementHazelcastImporter.class,
+    classes = {ProcessInstanceHazelcastImporter.class,
         ZeebeNotificationService.class}
 )
-public class ProcessAndElementHazelcastImporterTest extends ZeebeRepositoryTest {
+public class ProcessHazelcastImporterTest extends ZeebeRepositoryTest {
 
   @Autowired
-  ProcessAndElementHazelcastImporter processAndElementImporter;
+  ProcessInstanceHazelcastImporter processInstanceImporter;
 
   @Autowired
   ElementInstanceRepository elementInstanceRepository;
@@ -33,11 +33,11 @@ public class ProcessAndElementHazelcastImporterTest extends ZeebeRepositoryTest 
   public void only_storing_first_variable_event_prevents_duplicate_PartitionID_and_Position() {
     // given
     Schema.ProcessInstanceRecord processInstance1 = createElementInstanceWithId("first-elementId");
-    processAndElementImporter.importProcessInstance(processInstance1);
+    processInstanceImporter.importData(processInstance1);
 
     // when
     Schema.ProcessInstanceRecord processInstance2 = createElementInstanceWithId("second-elementId");
-    processAndElementImporter.importProcessInstance(processInstance2);
+    processInstanceImporter.importData(processInstance2);
 
     // then
     Iterable<ElementInstanceEntity> all = elementInstanceRepository.findAll();

@@ -27,6 +27,7 @@ import io.zeebe.monitor.rest.dto.MessageSubscriptionDto;
 import io.zeebe.monitor.rest.dto.ProcessDto;
 import io.zeebe.monitor.rest.dto.ProcessInstanceListDto;
 import io.zeebe.monitor.rest.dto.TimerDto;
+import io.zeebe.monitor.security.PermissionService;
 import jakarta.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
@@ -37,6 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,6 +58,7 @@ public class ProcessesViewController extends AbstractViewController {
   @Autowired private ProcessInstanceRepository processInstanceRepository;
   @Autowired private MessageSubscriptionRepository messageSubscriptionRepository;
   @Autowired private TimerRepository timerRepository;
+  @Autowired private PermissionService permissionService;
 
   @GetMapping("/")
   public String index(final Map<String, Object> model, final Pageable pageable) {
@@ -63,20 +66,22 @@ public class ProcessesViewController extends AbstractViewController {
   }
 
   @GetMapping("/views/processes")
+  @Transactional
   public String processList(final Map<String, Object> model, final Pageable pageable) {
-
-    final long count = processRepository.count();
+    var availableIds = permissionService.getAllAvailableId();
 
     final List<ProcessDto> processes = new ArrayList<>();
-    for (final ProcessEntity processEntity : processRepository.findAll(pageable)) {
+    var dtos = processRepository.findByBpmnProcessIdIn(availableIds, pageable);
+    if (dtos == null) dtos = Page.empty();
+    for (final ProcessEntity processEntity : dtos) {
       final ProcessDto dto = toDto(processEntity);
       processes.add(dto);
     }
 
     model.put("processes", processes);
-    model.put("count", count);
+    model.put("count", dtos.getTotalElements());
 
-    addPaginationToModel(model, pageable, count);
+    addPaginationToModel(model, pageable, dtos.getTotalElements());
     addDefaultAttributesToModel(model);
 
     return "process-list-view";

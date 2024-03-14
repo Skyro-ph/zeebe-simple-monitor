@@ -14,15 +14,20 @@ import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.zeebe.monitor.entity.ProcessEntity;
 import io.zeebe.monitor.entity.ProcessInstanceEntity;
 import java.util.Optional;
+
+import io.zeebe.monitor.security.PermissionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 class InstancesTimerListViewControllerTest extends AbstractViewOrResourceTest {
 
   @Autowired protected InstancesTimerListViewController instancesTimerListViewController;
+
+  @MockBean() private PermissionService permissionService;
 
   @BeforeEach
   public void setUp() {
@@ -40,6 +45,8 @@ class InstancesTimerListViewControllerTest extends AbstractViewOrResourceTest {
     ProcessEntity processEntity = mock(ProcessEntity.class, RETURNS_MOCKS);
     when(processEntity.getResource()).thenReturn(modelInstance.toString());
 
+    when(permissionService.isHasReadPermission(any()))
+            .thenReturn(true);
     when(processInstanceRepository.findByKey(anyLong()))
         .thenReturn(Optional.of(processInstanceEntity));
     when(processRepository.findByKey(anyLong())).thenReturn(Optional.of(processEntity));

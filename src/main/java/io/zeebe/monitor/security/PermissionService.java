@@ -28,4 +28,27 @@ public class PermissionService {
 
         return List.of();
     }
+    
+    public List<String> getAllIdThatUserCanEdit() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getPrincipal() instanceof TokenUser principal) {
+            return accessEntityRepository.getAllByUserIdAndPermission(principal.getUsername(), AccessEntity.Permission.EDIT)
+                    .stream()
+                    .map(AccessEntity::getBpmnProcessId)
+                    .toList();
+        }
+
+        return List.of();
+    }
+
+    public boolean isHasReadPermission(String bpmnId) {
+         return getAllAvailableId().stream()
+                 .anyMatch(id -> id.equals(bpmnId));
+    }
+    
+    public boolean isHasEditPermission(String bpmnId) {
+        return getAllIdThatUserCanEdit().stream()
+                .anyMatch(id -> id.equals(bpmnId));
+    }
 }

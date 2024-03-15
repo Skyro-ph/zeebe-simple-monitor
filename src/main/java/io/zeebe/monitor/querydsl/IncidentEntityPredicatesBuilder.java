@@ -55,6 +55,11 @@ public class IncidentEntityPredicatesBuilder {
     return this;
   }
 
+  public IncidentEntityPredicatesBuilder withProcessIds(List<String> ids) {
+    predicates.addAll(ids.stream().map(s -> pathBuilder.getString("bpmnProcessId").containsIgnoreCase(s)).toList());
+    return this;
+  }
+
   public Predicate build() {
     BooleanExpression result = Expressions.asBoolean(true).isTrue();
     for (Predicate predicate : predicates) {

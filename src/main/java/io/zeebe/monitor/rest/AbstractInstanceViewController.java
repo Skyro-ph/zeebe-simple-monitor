@@ -3,6 +3,7 @@ package io.zeebe.monitor.rest;
 import static io.zeebe.monitor.rest.ProcessesViewController.EXCLUDE_ELEMENT_TYPES;
 import static io.zeebe.monitor.rest.ProcessesViewController.PROCESS_INSTANCE_COMPLETED_INTENTS;
 import static io.zeebe.monitor.rest.ProcessesViewController.PROCESS_INSTANCE_ENTERED_INTENTS;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.samskivert.mustache.Mustache;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import io.zeebe.monitor.security.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,10 +43,16 @@ public abstract class AbstractInstanceViewController extends AbstractViewControl
   @Autowired protected ProcessInstanceRepository processInstanceRepository;
   @Autowired protected ElementInstanceRepository elementInstanceRepository;
   @Autowired protected IncidentRepository incidentRepository;
+  @Autowired protected PermissionService permissionService;
 
   protected void initializeProcessInstanceDto(
       long key, Map<String, Object> model, Pageable pageable) {
     final ProcessInstanceEntity instance = loadProcessInstanceEntity(key);
+
+    if (!permissionService.isHasReadPermission(instance.getBpmnProcessId())) {
+      throw new ResponseStatusException(
+              FORBIDDEN, "You don't have rights to the process instance: " + key);
+    }
 
     fillBpmnDataIntoModel(model, instance);
 

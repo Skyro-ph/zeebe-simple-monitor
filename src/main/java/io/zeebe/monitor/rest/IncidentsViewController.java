@@ -5,6 +5,7 @@ import io.zeebe.monitor.entity.IncidentEntity;
 import io.zeebe.monitor.querydsl.IncidentEntityPredicatesBuilder;
 import io.zeebe.monitor.repository.IncidentRepository;
 import io.zeebe.monitor.rest.dto.IncidentListDto;
+import io.zeebe.monitor.security.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class IncidentsViewController extends AbstractViewController {
 
   @Autowired private IncidentRepository incidentRepository;
+  @Autowired private PermissionService permissionService;
 
   @GetMapping("/views/incidents")
   @Transactional
@@ -31,8 +33,10 @@ public class IncidentsViewController extends AbstractViewController {
                              @RequestParam(required = false, name = "errorType") String errorType,
                              @RequestParam(required = false, name = "createdAfter") String createdAfter,
                              @RequestParam(required = false, name = "createdAfter") String createdBefore) {
+    var availableIds = permissionService.getAllAvailableId();
 
     final Predicate predicate = new IncidentEntityPredicatesBuilder()
+            .withProcessIds(availableIds)
         .onlyUnresolved()
         .withProcessId(bpmnProcessId)
         .withErrorType(errorType)

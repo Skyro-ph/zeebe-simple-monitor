@@ -106,9 +106,9 @@ services:
     profiles:
       - kafka_in_memory
 
-  simple-monitor-postgres:
-    container_name: zeebe-simple-monitor-postgres
-    image: ghcr.io/camunda-community-hub/zeebe-simple-monitor:2.5.2
+  simple-monitor-postgres-local:
+    container_name: simple-monitor-postgres-local
+    image: simple-monitor-postgres-local:latest
     environment:
       - zeebe.client.broker.gateway-address=zeebe:26500
       - zeebe.client.worker.hazelcast.connection=zeebe:5701

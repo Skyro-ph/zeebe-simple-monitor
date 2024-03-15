@@ -16,27 +16,45 @@
 package io.zeebe.monitor.rest;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.zeebe.monitor.repository.ProcessRepository;
 import io.zeebe.monitor.rest.dto.DeploymentDto;
 import io.zeebe.monitor.rest.dto.FileDto;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import io.zeebe.monitor.security.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping(path = "/api/processes")
 public class ProcessResource {
 
   @Autowired private ZeebeClient zeebeClient;
+  @Autowired private PermissionService permissionService;
+  @Autowired private ProcessRepository processRepository;
 
   @RequestMapping(path = "/{processDefinitionKey}", method = RequestMethod.POST)
   public void createProcessInstance(
       @PathVariable("processDefinitionKey") final long processDefinitionKey,
       @RequestBody final String payload) {
+    var process = processRepository.findByKey(processDefinitionKey);
+
+    if (process.isPresent()) {
+      if (!permissionService.isHasEditPermission(process.get().getBpmnProcessId())) {
+        throw new ResponseStatusException(FORBIDDEN, "No access to this key: " + processDefinitionKey);
+      }
+    } else {
+      throw new ResponseStatusException(NOT_FOUND, "No process found with key: " + processDefinitionKey);
+    }
 
     zeebeClient
         .newCreateInstanceCommand()

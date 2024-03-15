@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.OctetSequenceKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,6 +36,7 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers(HttpMethod.POST, "/api/processes").denyAll()
                                 .anyRequest().authenticated())
                 .apply(jwtAuthenticationConfigurer);
         return http.build();

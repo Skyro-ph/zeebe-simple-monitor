@@ -1,5 +1,6 @@
 package io.zeebe.monitor.rest;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import io.camunda.zeebe.model.bpmn.Bpmn;
@@ -97,6 +98,10 @@ public class ProcessesViewController extends AbstractViewController {
             .findByKey(key)
             .orElseThrow(
                 () -> new ResponseStatusException(NOT_FOUND, "No process found with key: " + key));
+
+    if (!permissionService.isHasReadPermission(process.getBpmnProcessId())) {
+      throw new ResponseStatusException(FORBIDDEN, "No access to this key: " + key);
+    }
 
     model.put("process", toDto(process));
     model.put("resource", getProcessResource(process));

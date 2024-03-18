@@ -35,14 +35,14 @@ public class InstancesViewController extends AbstractViewController {
             .withStateType(state)
             .build();
 
-    final Page<ProcessInstanceEntity> dtos = processInstanceRepository.findAll(predicate, pageable);
+    final Page<ProcessInstanceEntity> entities = processInstanceRepository.findAll(predicate, pageable);
     final List<ProcessInstanceListDto> instances = new ArrayList<>();
-    for (final ProcessInstanceEntity instanceEntity : dtos) {
+    for (final ProcessInstanceEntity instanceEntity : entities) {
       final ProcessInstanceListDto dto = ProcessesViewController.toDto(instanceEntity);
       instances.add(dto);
     }
 
-    final long count = dtos.getTotalElements();
+    final long count = entities.getTotalElements();
 
     model.put("instances", instances);
     model.put("count", count);

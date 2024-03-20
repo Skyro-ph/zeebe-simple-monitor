@@ -34,6 +34,8 @@ import static jakarta.transaction.Transactional.TxType.SUPPORTS;
 public interface ProcessInstanceRepository
     extends PagingAndSortingRepository<ProcessInstanceEntity, Long>, CrudRepository<ProcessInstanceEntity, Long> {
 
+  Page<ProcessInstanceEntity> findByBpmnProcessIdIn(List<String> ids, Pageable pageable);
+
   Page<ProcessInstanceEntity> findByProcessDefinitionKey(
       long processDefinitionKey, Pageable pageable);
 

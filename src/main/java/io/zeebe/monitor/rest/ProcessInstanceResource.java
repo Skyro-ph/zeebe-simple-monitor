@@ -16,7 +16,9 @@
 package io.zeebe.monitor.rest;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.zeebe.monitor.repository.ProcessInstanceRepository;
 import io.zeebe.monitor.rest.dto.ResolveIncidentDto;
+import io.zeebe.monitor.security.PermissionService;
 import io.zeebe.monitor.zeebe.ZeebeNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/instances")
@@ -31,21 +37,29 @@ public class ProcessInstanceResource {
 
   @Autowired private ZeebeClient zeebeClient;
   @Autowired private ZeebeNotificationService zeebeNotificationService;
+  @Autowired private ProcessInstanceRepository processInstanceRepository;
+  @Autowired private PermissionService permissionService;
 
   @RequestMapping(path = "/{key}", method = RequestMethod.DELETE)
   public void cancelProcessInstance(@PathVariable("key") final long key) throws Exception {
+    checkAdminPermission(key);
+
     zeebeClient.newCancelInstanceCommand(key).send().join();
   }
 
   @RequestMapping(path = "/{key}/set-variables", method = RequestMethod.PUT)
   public void setVariables(@PathVariable("key") final long key, @RequestBody final String payload)
       throws Exception {
+    checkAdminPermission(key);
+
     zeebeClient.newSetVariablesCommand(key).variables(payload).send().join();
   }
 
   @RequestMapping(path = "/{key}/set-variables-local", method = RequestMethod.PUT)
   public void setVariablesLocal(
       @PathVariable("key") final long key, @RequestBody final String payload) throws Exception {
+    checkAdminPermission(key);
+
     zeebeClient.newSetVariablesCommand(key).variables(payload).local(true).send().join();
   }
 
@@ -53,6 +67,7 @@ public class ProcessInstanceResource {
   public void resolveIncident(
       @PathVariable("key") final long key, @RequestBody final ResolveIncidentDto dto)
       throws Exception {
+    checkAdminPermission(key);
 
     if (dto.getJobKey() != null && dto.getJobKey() > 0) {
       zeebeClient
@@ -71,5 +86,15 @@ public class ProcessInstanceResource {
     }
 
     zeebeClient.newResolveIncidentCommand(key).send().join();
+  }
+
+  private void checkAdminPermission(long key) {
+    var processInstance = processInstanceRepository.findByKey(key)
+            .orElseThrow(() -> new ResponseStatusException(
+                    NOT_FOUND, "No process instance found with key: " + key));
+    if (!permissionService.isHasEditPermission(processInstance.getBpmnProcessId())) {
+      throw new ResponseStatusException(
+              FORBIDDEN, "You can't change process instance with key: " + key);
+    }
   }
 }

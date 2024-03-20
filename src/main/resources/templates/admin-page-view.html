@@ -1,0 +1,83 @@
+{{>layout/header}}
+
+{{>modals/permission-modal}}
+
+<div class="row">
+    <div class="col-md-12">
+        <form method="get">
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="filter-process-id" name="bpmnProcessId"
+                               placeholder="process id" style="width: 15em">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="filter-user-id" name="userId" placeholder="user id"
+                               style="width: 15em">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-2">
+                        <svg class="bi" width="12" height="12" fill="silver">
+                            <use xlink:href="/img/bootstrap-icons.svg#funnel"/>
+                        </svg>
+                        Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-2">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#permissionModal">
+            New Permission
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+            <th>User id</th>
+            <th>BPMN process id</th>
+            <th>Permission</th>
+            <th>Delete</th>
+            </thead>
+            {{#usersAccesses}}
+            <tr>
+                <td>{{userId}}</td>
+                <td>{{bpmnProcessId}}</td>
+                <td>{{permission}}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger" onclick="deletePermission({{permissionId}})">
+                        <svg class="bi" width="12" height="12" fill="white">
+                            <use xlink:href="/img/bootstrap-icons.svg#trash"/>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            {{/usersAccesses}}
+        </table>
+        {{>components/table-pagination}}
+    </div>
+</div>
+
+{{>layout/footer}}
+
+<script type="application/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        listSort('bpmnProcessId', 'bpmn-process-id')
+    }, false);
+    document.addEventListener('DOMContentLoaded', function () {
+        listSort('userId', 'filter-user-id')
+    }, false);
+    document.addEventListener('DOMContentLoaded', function() {
+        bindQueryParamToElement("filter-process-id", "bpmnProcessId");
+        bindQueryParamToElement("filter-user-id", "userId");
+    }, false);
+</script>

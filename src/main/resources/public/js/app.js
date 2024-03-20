@@ -770,3 +770,50 @@ function bindQueryParamToElement(elementId, paramName) {
         document.getElementById(elementId).setAttribute("value", params.get(paramName))
     }
 }
+
+// --------------------------------------------------------------------
+
+function createPermission() {
+    const userId = document.getElementById("userId").value;
+    const permission = document.getElementById("permission").value;
+    const bpmnProcessId = document.getElementById("bpmnProcessId").value;
+
+    const data = {
+        userId: userId,
+        permission: permission,
+        bpmnProcessId: bpmnProcessId
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: buildPath('api/admin/permissions'),
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        success: function (result) {
+            showSuccess("Permission created.");
+            reload();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            showErrorResonse(xhr, ajaxOptions, thrownError);
+        },
+        timeout: 5000,
+        crossDomain: true,
+    });
+}
+
+function deletePermission(id) {
+    $.ajax({
+        type: 'DELETE',
+        url: buildPath('api/admin/permissions/' + id),
+        contentType: 'application/json; charset=utf-8',
+        success: function (result) {
+            showSuccess("Permission deleted.");
+            reload();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            showErrorResonse(xhr, ajaxOptions, thrownError);
+        },
+        timeout: 5000,
+        crossDomain: true,
+    });
+}

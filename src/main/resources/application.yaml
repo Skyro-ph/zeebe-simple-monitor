@@ -103,3 +103,6 @@ white-label:
     title: Zeebe Simple Monitor
     css.path: css/custom.css
     js.path: js/custom.js
+
+jwt:
+  access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'

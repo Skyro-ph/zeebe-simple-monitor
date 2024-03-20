@@ -62,6 +62,7 @@ public class ProcessesViewController extends AbstractViewController {
   @Autowired private PermissionService permissionService;
 
   @GetMapping("/")
+  @Transactional
   public String index(final Map<String, Object> model, final Pageable pageable) {
     return processList(model, pageable);
   }

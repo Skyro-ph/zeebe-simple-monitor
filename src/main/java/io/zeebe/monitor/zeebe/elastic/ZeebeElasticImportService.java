@@ -12,14 +12,14 @@ import com.google.protobuf.util.JsonFormat;
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.ElasticConfig;
 import io.zeebe.monitor.repository.ElasticConfigRepository;
-import io.zeebe.monitor.zeebe.hazelcast.importers.ErrorHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.IncidentHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.JobHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.MessageHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.MessageSubscriptionHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.ProcessAndElementHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.TimerHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.VariableHazelcastImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.ErrorProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.IncidentProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.JobProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.MessageProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.MessageSubscriptionProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.ProcessAndElementProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.TimerProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.VariableProtobufImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,21 +42,21 @@ public class ZeebeElasticImportService {
     private String elasticIndex;
 
     @Autowired
-    private ProcessAndElementHazelcastImporter processAndElementImporter;
+    private ProcessAndElementProtobufImporter processAndElementImporter;
     @Autowired
-    private VariableHazelcastImporter variableImporter;
+    private VariableProtobufImporter variableImporter;
     @Autowired
-    private JobHazelcastImporter jobImporter;
+    private JobProtobufImporter jobImporter;
     @Autowired
-    private IncidentHazelcastImporter incidentImporter;
+    private IncidentProtobufImporter incidentImporter;
     @Autowired
-    private MessageHazelcastImporter messageImporter;
+    private MessageProtobufImporter messageImporter;
     @Autowired
-    private MessageSubscriptionHazelcastImporter messageSubscriptionImporter;
+    private MessageSubscriptionProtobufImporter messageSubscriptionImporter;
     @Autowired
-    private TimerHazelcastImporter timerImporter;
+    private TimerProtobufImporter timerImporter;
     @Autowired
-    private ErrorHazelcastImporter errorImporter;
+    private ErrorProtobufImporter errorImporter;
 
     @Autowired
     private ElasticConfigRepository elasticConfigRepository;

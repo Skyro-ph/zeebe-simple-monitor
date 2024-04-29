@@ -1,4 +1,4 @@
-package io.zeebe.monitor.zeebe.hazelcast.importers;
+package io.zeebe.monitor.zeebe.protobuf.importers;
 
 import io.zeebe.exporter.proto.Schema;
 import io.zeebe.monitor.entity.JobEntity;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JobHazelcastImporter {
+public class JobProtobufImporter {
 
   @Autowired private JobRepository jobRepository;
 

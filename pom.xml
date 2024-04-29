@@ -4,7 +4,7 @@
 
     <groupId>io.zeebe</groupId>
     <artifactId>zeebe-simple-monitor</artifactId>
-    <version>2.6.4-SNAPSHOT</version>
+    <version>2.7.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -19,12 +19,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <zeebe.version>8.3.4</zeebe.version>
-        <version.zeebe.spring>8.4.0</version.zeebe.spring>
+        <version.zeebe.spring>8.4.2</version.zeebe.spring>
         <hazelcast.exporter.version>1.4.0</hazelcast.exporter.version>
+        <redis.exporter.version>0.9.11</redis.exporter.version>
 
         <querydsl.version>5.0.0</querydsl.version>
 
-        <spring.boot.version>3.2.1</spring.boot.version>
+        <spring.boot.version>3.2.5</spring.boot.version>
         <!-- pin Hazelcast version because of spring-boot-dependencies -->
         <version.hazelcast>5.3.6</version.hazelcast>
 
@@ -71,6 +72,12 @@
                 <groupId>io.zeebe.hazelcast</groupId>
                 <artifactId>zeebe-hazelcast-connector</artifactId>
                 <version>${hazelcast.exporter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zeebe.redis</groupId>
+                <artifactId>zeebe-redis-connector</artifactId>
+                <version>${redis.exporter.version}</version>
             </dependency>
 
             <dependency>
@@ -139,8 +146,8 @@
         </dependency>
 
         <dependency>
-           <groupId>io.micrometer</groupId>
-           <artifactId>micrometer-registry-prometheus</artifactId>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
         <dependency>
@@ -152,6 +159,11 @@
         <dependency>
             <groupId>io.zeebe.hazelcast</groupId>
             <artifactId>zeebe-hazelcast-connector</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.zeebe.redis</groupId>
+            <artifactId>zeebe-redis-connector</artifactId>
         </dependency>
 
         <dependency>
@@ -203,7 +215,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator</artifactId>
-            <version>0.50</version>
+            <version>0.52</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -248,21 +260,21 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.1</version>
+            <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.19.3</version>
+            <version>1.19.7</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mysql</artifactId>
-            <version>1.19.3</version>
+            <version>1.19.7</version>
             <scope>test</scope>
         </dependency>
 
@@ -352,6 +364,9 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                        <configuration>
+                            <loaderImplementation>CLASSIC</loaderImplementation>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -359,7 +374,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.2</version>
                 <executions>
                     <execution>
                         <phase>deploy</phase>
@@ -369,19 +384,20 @@
                     </execution>
                 </executions>
                 <configuration>
-                   <from>
-                      <image>${jib-maven-plugin.image}</image>
-                       <platforms>
-                           <platform>
-                               <architecture>amd64</architecture>
-                               <os>linux</os>
-                           </platform>
-                           <platform>
-                               <architecture>arm64</architecture>
-                               <os>linux</os>
-                           </platform>
-                       </platforms>
-                   </from>
+
+                    <from>
+                        <image>${jib-maven-plugin.image}</image>
+                        <platforms>
+                            <platform>
+                                <architecture>amd64</architecture>
+                                <os>linux</os>
+                            </platform>
+                            <platform>
+                                <architecture>arm64</architecture>
+                                <os>linux</os>
+                            </platform>
+                        </platforms>
+                    </from>
                     <to>
                         <image>ghcr.io/camunda-community-hub/zeebe-simple-monitor</image>
                         <tags>${project.version}</tags>
@@ -468,7 +484,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.4</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -520,8 +536,10 @@
 
     <scm>
         <url>https://github.com/camunda-community-hub/zeebe-simple-monitor</url>
-        <connection>scm:git:git@github.com:camunda-community-hub/zeebe-simple-monitor.git</connection>
-        <developerConnection>scm:git:git@github.com:camunda-community-hub/zeebe-simple-monitor.git</developerConnection>
+        <connection>scm:git:git@github.com:camunda-community-hub/zeebe-simple-monitor.git
+        </connection>
+        <developerConnection>scm:git:git@github.com:camunda-community-hub/zeebe-simple-monitor.git
+        </developerConnection>
         <tag>HEAD</tag>
     </scm>
 

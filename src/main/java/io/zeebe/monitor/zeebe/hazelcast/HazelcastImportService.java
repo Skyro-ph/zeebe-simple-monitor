@@ -5,14 +5,14 @@ import io.zeebe.exporter.proto.Schema;
 import io.zeebe.hazelcast.connect.java.ZeebeHazelcast;
 import io.zeebe.monitor.entity.HazelcastConfig;
 import io.zeebe.monitor.repository.HazelcastConfigRepository;
-import io.zeebe.monitor.zeebe.hazelcast.importers.ErrorHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.IncidentHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.JobHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.MessageHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.MessageSubscriptionHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.ProcessAndElementHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.TimerHazelcastImporter;
-import io.zeebe.monitor.zeebe.hazelcast.importers.VariableHazelcastImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.ErrorProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.IncidentProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.JobProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.MessageProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.MessageSubscriptionProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.ProcessAndElementProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.TimerProtobufImporter;
+import io.zeebe.monitor.zeebe.protobuf.importers.VariableProtobufImporter;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class HazelcastImportService {
 
-  @Autowired private ProcessAndElementHazelcastImporter processAndElementImporter;
-  @Autowired private VariableHazelcastImporter variableImporter;
-  @Autowired private JobHazelcastImporter jobImporter;
-  @Autowired private IncidentHazelcastImporter incidentImporter;
-  @Autowired private MessageHazelcastImporter messageImporter;
-  @Autowired private MessageSubscriptionHazelcastImporter messageSubscriptionImporter;
-  @Autowired private TimerHazelcastImporter timerImporter;
-  @Autowired private ErrorHazelcastImporter errorImporter;
+  @Autowired private ProcessAndElementProtobufImporter processAndElementImporter;
+  @Autowired private VariableProtobufImporter variableImporter;
+  @Autowired private JobProtobufImporter jobImporter;
+  @Autowired private IncidentProtobufImporter incidentImporter;
+  @Autowired private MessageProtobufImporter messageImporter;
+  @Autowired private MessageSubscriptionProtobufImporter messageSubscriptionImporter;
+  @Autowired private TimerProtobufImporter timerImporter;
+  @Autowired private ErrorProtobufImporter errorImporter;
 
   @Autowired private HazelcastConfigRepository hazelcastConfigRepository;
 

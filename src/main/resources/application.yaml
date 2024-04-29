@@ -7,23 +7,13 @@ zeebe:
       hazelcast:
         connection: ${HAZELCAST_URL:localhost:5701}
         connectionTimeout: PT30S
-elastic:
-  url: ${ZEEBE_ELASTIC_URL}
-  user: ${ZEEBE_ELASTIC_USER}
-  password: ${ZEEBE_ELASTIC_PASSWORD}
-  index: ${ZEEBE_ELASTIC_INDEX}
+      redis:
+        connection: redis://localhost:6379
 
-cleanup:
-  processInstances:
-    completed:
-      expiration-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_EXPIRATION_DAYS:14}
-      frequency-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_RATE_DAYS:1}
-      partition-size: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_PARTITION_SIZE:15}
-
-# Options: hazelcast | kafka
+# Options: hazelcast | kafka | redis
 # This config switches importers between the provided
-# To use each of them, zeebe must be configured using hazelcast-exporter or kafka-exporter, respectively
-# See the examples in docker/docker-compose.yml in services.zeebe-hazelcast and services.zeebe-kafka
+# To use each of them, zeebe must be configured using hazelcast-exporter, kafka-exporter or redis-exporter, respectively
+# See the examples in docker/docker-compose.yml in services.zeebe-hazelcast, services.zeebe-kafka, services-zeebe-redis
 zeebe-importer: ${IMPORTER:hazelcast}
 
 spring:
@@ -103,3 +93,16 @@ white-label:
     title: Zeebe Simple Monitor
     css.path: css/custom.css
     js.path: js/custom.js
+
+elastic:
+  url: ${ZEEBE_ELASTIC_URL}
+  user: ${ZEEBE_ELASTIC_USER}
+  password: ${ZEEBE_ELASTIC_PASSWORD}
+  index: ${ZEEBE_ELASTIC_INDEX}
+
+cleanup:
+  processInstances:
+    completed:
+      expiration-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_EXPIRATION_DAYS:14}
+      frequency-days: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_RATE_DAYS:1}
+      partition-size: ${CLEANUP_PROCESS_INSTANCE_COMPLETED_PARTITION_SIZE:15}

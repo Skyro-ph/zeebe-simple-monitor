@@ -9,6 +9,13 @@ public final class ElasticConfig {
   @Id private String id;
   private long timestamp;
 
+  public ElasticConfig() {}
+
+  public ElasticConfig(String id, long timestamp) {
+    this.id = id;
+    this.timestamp = timestamp;
+  }
+
   public String getId() {
     return id;
   }

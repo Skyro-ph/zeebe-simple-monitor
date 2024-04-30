@@ -63,39 +63,42 @@ public class ZeebeElasticImportService {
 
     public void importFrom(final ElasticsearchClient elastic) throws Exception {
 
-        final var elasticConfig =
-                elasticConfigRepository
-                        .findById("cfg")
-                        .orElseGet(
-                                () -> {
-                                    final var config = new ElasticConfig();
-                                    config.setId("cfg");
-                                    config.setTimestamp(-1);
-                                    return config;
-                                });
-        LOG.info("Start importing from {}", ZonedDateTime.ofInstant(Instant.ofEpochMilli(elasticConfig.getTimestamp()), ZoneId.systemDefault()));
+        for (ElasticValueType type : ElasticValueType.values()) {
+            final var elasticConfig =
+                    elasticConfigRepository
+                            .findById(type.name())
+                            .orElseGet(
+                                    () ->
+                                        elasticConfigRepository
+                                                .findById("cfg")
+                                                .map(cfg -> new ElasticConfig(type.name(), cfg.getTimestamp()))
+                                                .orElseGet(() ->
+                                                    new ElasticConfig(type.name(), -1)
+                                                )
+                                    );
+            LOG.info("Start importing {} from {}", type.name(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(elasticConfig.getTimestamp()), ZoneId.systemDefault()));
 
-        try {
+            try {
 
-            SearchResponse<ObjectNode> data = elastic.search(
-                    getRequest(elasticIndex, elasticConfig.getTimestamp()),
-                    ObjectNode.class);
+                SearchResponse<ObjectNode> data = elastic.search(
+                        getRequest(elasticIndex + type.getIndexName() + "*", elasticConfig.getTimestamp()),
+                        ObjectNode.class);
 
-            AtomicInteger counter = new AtomicInteger(0);
-            data.hits().hits().stream()
-                    .map(Hit::source)
-                    .filter(Objects::nonNull)
-                    .map(r -> importRecord(r, counter))
-                    .reduce(Long::max)
-                    .ifPresent(t -> {
-                        LOG.info("Imported {} records from elastic till {}", counter.get(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(t), ZoneId.systemDefault()));
-                        elasticConfig.setTimestamp(t);
-                        elasticConfigRepository.save(elasticConfig);
-                    });
-        } catch (Exception e) {
-            LOG.error("Error while importing.", e);
+                AtomicInteger counter = new AtomicInteger(0);
+                data.hits().hits().stream()
+                        .map(Hit::source)
+                        .filter(Objects::nonNull)
+                        .map(r -> importRecord(r, counter))
+                        .reduce(Long::max)
+                        .ifPresent(t -> {
+                            LOG.info("Imported {} records from elastic {} till {}", counter.get(), type.name(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(t), ZoneId.systemDefault()));
+                            elasticConfig.setTimestamp(t);
+                            elasticConfigRepository.save(elasticConfig);
+                        });
+            } catch (Exception e) {
+                LOG.error("Error while importing.", e);
+            }
         }
-
     }
 
     private SearchRequest getRequest(String index, long timestamp) {
@@ -106,74 +109,73 @@ public class ZeebeElasticImportService {
                 .size(1000).build();
     }
 
-    private long importRecord(ObjectNode record, AtomicInteger counter) {
-        String type = record.get("valueType").asText();
-
+    private long importRecord(ObjectNode jsonRecord, AtomicInteger counter) {
+        String type = jsonRecord.get("valueType").asText();
 
         switch (type) {
             case "PROCESS" -> {
                 var builder = Schema.ProcessRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 processAndElementImporter.importProcess(builder.build());
             }
             case "PROCESS_INSTANCE" -> {
                 var builder = Schema.ProcessInstanceRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 processAndElementImporter.importProcessInstance(builder.build());
             }
             case "INCIDENT" -> {
                 var builder = Schema.IncidentRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 incidentImporter.importIncident(builder.build());
             }
             case "JOB" -> {
                 var builder = Schema.JobRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 jobImporter.importJob(builder.build());
             }
             case "VARIABLE" -> {
                 var builder = Schema.VariableRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 variableImporter.importVariable(builder.build());
             }
             case "TIMER" -> {
                 var builder = Schema.TimerRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 timerImporter.importTimer(builder.build());
             }
             case "MESSAGE" -> {
                 var builder = Schema.MessageRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 messageImporter.importMessage(builder.build());
             }
             case "MESSAGE_SUBSCRIPTION", "PROCESS_MESSAGE_SUBSCRIPTION" -> {
                 var builder = Schema.MessageSubscriptionRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 messageSubscriptionImporter.importMessageSubscription(builder.build());
             }
             case "MESSAGE_START_EVENT_SUBSCRIPTION" -> {
                 var builder = Schema.MessageStartEventSubscriptionRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 messageSubscriptionImporter.importMessageStartEventSubscription(builder.build());
             }
             case "ERROR" -> {
                 var builder = Schema.ErrorRecord.newBuilder();
-                parseJsonToProto(record, builder);
+                parseJsonToProto(jsonRecord, builder);
                 errorImporter.importError(builder.build());
             }
             default -> LOG.error("Unknown type {}", type);
         }
 
         counter.incrementAndGet();
-        return record.get("timestamp").asLong();
+        return jsonRecord.get("timestamp").asLong();
 
 
     }
 
-    private void parseJsonToProto(ObjectNode record, Message.Builder builder) {
-        var metadata = record.deepCopy();
+    private void parseJsonToProto(ObjectNode jsonRecord, Message.Builder builder) {
+        var metadata = jsonRecord.deepCopy();
         metadata.remove("value");
-        var value = record.with("value");
+        var value = jsonRecord.withObject("value");
         value.set("metadata", metadata);
 
         try {
